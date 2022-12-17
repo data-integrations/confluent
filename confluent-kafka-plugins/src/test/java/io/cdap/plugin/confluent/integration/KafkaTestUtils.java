@@ -171,7 +171,7 @@ public class KafkaTestUtils {
     props.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, "https");
     props.put(SaslConfigs.SASL_MECHANISM, "PLAIN");
     props.put(SaslConfigs.SASL_JAAS_CONFIG, "org.apache.kafka.common.security.plain.PlainLoginModule required " +
-      "username=" + CLUSTER_API_KEY + " password=" + CLUSTER_API_SECRET + ";");
+      "username=\"" + CLUSTER_API_KEY + "\" password=\"" + CLUSTER_API_SECRET + "\";");
     return props;
   }
 }

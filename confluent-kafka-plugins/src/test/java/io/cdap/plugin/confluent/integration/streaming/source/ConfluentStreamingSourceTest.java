@@ -96,12 +96,12 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
 
   @After
   public void tearDown() throws Exception {
-    KafkaTestUtils.deleteTopic(topic);
     if (programManager != null) {
       programManager.stop();
-      programManager.waitForStopped(10, TimeUnit.SECONDS);
+      programManager.waitForStopped(1, TimeUnit.MINUTES);
       programManager.waitForRun(ProgramRunStatus.KILLED, 10, TimeUnit.SECONDS);
     }
+    KafkaTestUtils.deleteTopic(topic);
   }
 
   @Test
@@ -129,7 +129,7 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
     waitForRecords(outputTable, expectedRecords);
 
     programManager.stop();
-    programManager.waitForStopped(10, TimeUnit.SECONDS);
+    programManager.waitForStopped(1, TimeUnit.MINUTES);
 
     // clear the output table
     DataSetManager<Table> outputManager = getDataset(outputTable);
@@ -297,8 +297,6 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
     properties.put(ConfluentStreamingSourceConfig.NAME_TIMEFIELD, timeField);
     properties.put(ConfluentStreamingSourceConfig.NAME_PARTITION_FIELD, partitionField);
     properties.put(ConfluentStreamingSourceConfig.NAME_OFFSET_FIELD, offsetField);
-    programManager = deploySourcePlugin(properties);
-    programManager.startAndWaitForRun(ProgramRunStatus.RUNNING, 10, TimeUnit.SECONDS);
 
     Schema inputSchema = Schema.recordOf(
       "user",
@@ -325,6 +323,9 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
     sendKafkaAvroMessage(topic, 1, "a", transformer.transform(inputRecord1));
     sendKafkaAvroMessage(topic, 0, "b", transformer.transform(inputRecord2));
     sendKafkaAvroMessage(topic, 0, "c", transformer.transform(inputRecord3));
+
+    programManager = deploySourcePlugin(properties);
+    programManager.startAndWaitForRun(ProgramRunStatus.RUNNING, 10, TimeUnit.SECONDS);
 
     List<StructuredRecord> actualRecords = waitForRecords(outputTable, 3);
 
@@ -370,8 +371,6 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
     properties.put(ConfluentStreamingSourceConfig.NAME_SR_API_KEY, KafkaTestUtils.SR_API_KEY);
     properties.put(ConfluentStreamingSourceConfig.NAME_SR_API_SECRET, KafkaTestUtils.SR_API_SECRET);
     properties.put(ConfluentStreamingSourceConfig.NAME_VALUE_FIELD, messageField);
-    programManager = deploySourcePlugin(properties);
-    programManager.startAndWaitForRun(ProgramRunStatus.RUNNING, 10, TimeUnit.SECONDS);
 
     List<StructuredRecord> records = Arrays.asList(
       StructuredRecord.builder(valueSchema)
@@ -394,6 +393,9 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
     for (GenericRecord genericRecord : genericRecords) {
       sendKafkaAvroMessage(topic, 0, null, genericRecord);
     }
+
+    programManager = deploySourcePlugin(properties);
+    programManager.startAndWaitForRun(ProgramRunStatus.RUNNING, 10, TimeUnit.SECONDS);
 
     List<StructuredRecord> expectedRecords = records.stream()
       .map(record -> StructuredRecord.builder(schema)

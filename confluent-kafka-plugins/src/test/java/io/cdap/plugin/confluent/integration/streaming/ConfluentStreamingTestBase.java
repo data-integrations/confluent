@@ -49,6 +49,7 @@ import org.assertj.core.api.Assertions;
 import org.awaitility.Awaitility;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +61,10 @@ public abstract class ConfluentStreamingTestBase extends HydratorTestBase {
   public static final TestConfiguration CONFIG =
     new TestConfiguration(Constants.Explore.EXPLORE_ENABLED, false,
                           Constants.AppFabric.SPARK_COMPAT, Compat.SPARK_COMPAT);
+
+  @ClassRule
+  public static TemporaryFolder tmpFolder = new TemporaryFolder();
+
   private static final Logger LOG = LoggerFactory.getLogger(ConfluentStreamingTestBase.class);
   private static final ArtifactId APP_ARTIFACT_ID = NamespaceId.DEFAULT.artifact("data-streams", "1.0.0");
   private static final ArtifactSummary APP_ARTIFACT = new ArtifactSummary("data-streams", "1.0.0");
