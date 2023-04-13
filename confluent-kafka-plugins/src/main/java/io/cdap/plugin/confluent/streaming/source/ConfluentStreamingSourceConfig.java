@@ -65,8 +65,12 @@ public class ConfluentStreamingSourceConfig extends ReferencePluginConfig implem
   public static final String NAME_SR_API_KEY = "schemaRegistryApiKey";
   public static final String NAME_SR_API_SECRET = "schemaRegistryApiSecret";
   public static final String NAME_VALUE_FIELD = "valueField";
+  public static final String NAME_OUTPUT = "output";
   public static final String NAME_FORMAT = "format";
   public static final String NAME_KAFKA_PROPERTIES = "kafkaProperties";
+
+  private static final Schema DEFAULT_SCHEMA =
+    Schema.recordOf("etlSchemaBody", Schema.Field.of("message", Schema.of(Schema.Type.STRING)));
 
   private static final String SEPARATOR = ":";
 
@@ -112,6 +116,7 @@ public class ConfluentStreamingSourceConfig extends ReferencePluginConfig implem
   @Description("Output schema of the source, including the timeField and keyField. " +
     "The fields excluding the timeField and keyField are used in conjunction with the format " +
     "to parse Kafka payloads.")
+  @Nullable
   private final String schema;
 
   @Name(NAME_FORMAT)
@@ -306,7 +311,7 @@ public class ConfluentStreamingSourceConfig extends ReferencePluginConfig implem
   @Nullable
   public Schema getSchema() {
     try {
-      return Strings.isNullOrEmpty(schema) ? null : Schema.parseJson(schema);
+      return Strings.isNullOrEmpty(schema) ? DEFAULT_SCHEMA : Schema.parseJson(schema);
     } catch (IOException e) {
       throw new IllegalArgumentException("Invalid schema : " + e.getMessage());
     }
@@ -320,7 +325,7 @@ public class ConfluentStreamingSourceConfig extends ReferencePluginConfig implem
   @Nullable
   public Schema getSchema(FailureCollector collector) {
     try {
-      return Strings.isNullOrEmpty(schema) ? null : Schema.parseJson(schema);
+      return Strings.isNullOrEmpty(schema) ? DEFAULT_SCHEMA : Schema.parseJson(schema);
     } catch (IOException e) {
       collector.addFailure("Invalid schema : " + e.getMessage(), null).withConfigProperty(NAME_SCHEMA);
     }
