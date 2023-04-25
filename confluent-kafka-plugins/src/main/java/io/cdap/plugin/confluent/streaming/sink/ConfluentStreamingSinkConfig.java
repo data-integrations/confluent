@@ -115,13 +115,15 @@ public class ConfluentStreamingSinkConfig extends ReferencePluginConfig implemen
   private final String compressionType;
 
   @Name(NAME_CLUSTER_API_KEY)
-  @Description("The Confluent API Key.")
+  @Description("The Confluent API Key. Required if connecting with Confluent Cloud.")
   @Macro
+  @Nullable
   private final String clusterApiKey;
 
   @Name(NAME_CLUSTER_API_SECRET)
-  @Description("The Confluent API Secret.")
+  @Description("The Confluent API Secret. Required if connecting with Confluent Cloud.")
   @Macro
+  @Nullable
   private final String clusterApiSecret;
 
   @Name(NAME_SR_URL)
@@ -207,14 +209,18 @@ public class ConfluentStreamingSinkConfig extends ReferencePluginConfig implemen
       ConfigValidations.validateBrokers(brokers, NAME_BROKERS, collector);
     }
 
-    if (!containsMacro(NAME_CLUSTER_API_KEY) && Strings.isNullOrEmpty(clusterApiKey)) {
-      collector.addFailure("Cluster API Key must be provided.", null)
-        .withConfigProperty(NAME_CLUSTER_API_KEY);
+    if (!containsMacro(NAME_CLUSTER_API_KEY) && Strings.isNullOrEmpty(clusterApiKey) &&
+      (containsMacro(NAME_CLUSTER_API_SECRET) ||
+        (!containsMacro(NAME_CLUSTER_API_SECRET) && !Strings.isNullOrEmpty(clusterApiSecret)))) {
+      collector.addFailure("Cluster API Key should be provided when Cluster API Secret is used.", null)
+        .withConfigProperty(ConfluentStreamingSinkConfig.NAME_CLUSTER_API_KEY);
     }
 
-    if (!containsMacro(NAME_CLUSTER_API_SECRET) && Strings.isNullOrEmpty(clusterApiSecret)) {
-      collector.addFailure("Cluster API Secret must be provided.", null)
-        .withConfigProperty(NAME_CLUSTER_API_SECRET);
+    if (!containsMacro(NAME_CLUSTER_API_SECRET) && Strings.isNullOrEmpty(clusterApiSecret) &&
+      (containsMacro(NAME_CLUSTER_API_KEY) ||
+        (!containsMacro(NAME_CLUSTER_API_KEY) && !Strings.isNullOrEmpty(clusterApiKey)))) {
+      collector.addFailure("Cluster API Secret should be provided when Cluster API Key is used.", null)
+        .withConfigProperty(ConfluentStreamingSinkConfig.NAME_CLUSTER_API_SECRET);
     }
 
     if (!Strings.isNullOrEmpty(schemaRegistryUrl)) {

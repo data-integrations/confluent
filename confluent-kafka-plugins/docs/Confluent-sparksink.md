@@ -40,9 +40,9 @@ If set, this field must be present in the schema property and must be an int.
 
 **Additional Kafka Producer Properties:** Additional Kafka producer properties to set.
 
-**Cluster API Key:** The Confluent API Key used for the source.
+**Cluster API Key:** The Confluent API Key used for the source. Required if connecting with Confluent Cloud.
 
-**Cluster API Secret:** The Confluent API Secret used for the source.
+**Cluster API Secret:** The Confluent API Secret used for the source. Required if connecting with Confluent Cloud.
 
 **Schema Registry URL:** The Schema Registry endpoint URL.
 
