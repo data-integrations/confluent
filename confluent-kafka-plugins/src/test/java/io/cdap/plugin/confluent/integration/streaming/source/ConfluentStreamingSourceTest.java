@@ -91,8 +91,12 @@ public class ConfluentStreamingSourceTest extends ConfluentStreamingTestBase {
 
   @AfterClass
   public static void cleanupTestClass() {
-    kafkaProducer.close();
-    kafkaAvroProducer.close();
+    if (kafkaProducer != null) {
+      kafkaProducer.close();
+    }
+    if (kafkaAvroProducer != null) {
+      kafkaAvroProducer.close();
+    }
   }
 
   @Before

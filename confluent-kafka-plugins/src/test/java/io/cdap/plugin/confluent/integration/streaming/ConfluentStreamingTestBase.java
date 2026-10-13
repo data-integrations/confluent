@@ -37,6 +37,7 @@ import io.cdap.cdap.test.DataSetManager;
 import io.cdap.cdap.test.SparkManager;
 import io.cdap.cdap.test.TestConfiguration;
 import io.cdap.plugin.confluent.StructuredRecordRepresentation;
+import io.cdap.plugin.confluent.integration.KafkaTestUtils;
 import io.cdap.plugin.confluent.streaming.sink.ConfluentStreamingSink;
 import io.cdap.plugin.confluent.streaming.source.ConfluentStreamingSource;
 import io.confluent.kafka.serializers.KafkaAvroDeserializer;
@@ -58,7 +59,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class ConfluentStreamingTestBase extends HydratorTestBase {
   @ClassRule
   public static final TestConfiguration CONFIG =
-    new TestConfiguration(Constants.Explore.EXPLORE_ENABLED, false,
+    new TestConfiguration("explore.enabled", false,
                           Constants.AppFabric.SPARK_COMPAT, Compat.SPARK_COMPAT);
   private static final Logger LOG = LoggerFactory.getLogger(ConfluentStreamingTestBase.class);
   private static final ArtifactId APP_ARTIFACT_ID = NamespaceId.DEFAULT.artifact("data-streams", "1.0.0");
@@ -66,6 +67,7 @@ public abstract class ConfluentStreamingTestBase extends HydratorTestBase {
 
   @BeforeClass
   public static void setupBasic() throws Exception {
+    KafkaTestUtils.verifyTestProperties();
     LOG.info("Setting up application");
 
     setupStreamingArtifacts(APP_ARTIFACT_ID, DataStreamsApp.class);

@@ -36,6 +36,7 @@ import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.Assume;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -43,23 +44,28 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class KafkaTestUtils {
-  public static final String KAFKA_SERVER = requireProperty("test.kafka_server");
-  public static final String CLUSTER_API_KEY = requireProperty("test.cluster_api_key");
-  public static final String CLUSTER_API_SECRET = requireProperty("test.cluster_api_secret");
-  public static final String SR_URL = requireProperty("test.schema_registry_url");
-  public static final String SR_API_KEY = requireProperty("test.schema_registry_api_key");
-  public static final String SR_API_SECRET = requireProperty("test.schema_registry_api_secret");
+  public static final String KAFKA_SERVER = System.getProperty("test.kafka_server");
+  public static final String CLUSTER_API_KEY = System.getProperty("test.cluster_api_key");
+  public static final String CLUSTER_API_SECRET = System.getProperty("test.cluster_api_secret");
+  public static final String SR_URL = System.getProperty("test.schema_registry_url");
+  public static final String SR_API_KEY = System.getProperty("test.schema_registry_api_key");
+  public static final String SR_API_SECRET = System.getProperty("test.schema_registry_api_secret");
 
   private KafkaTestUtils() {
     throw new AssertionError("Can not be initialized");
   }
 
+  public static void verifyTestProperties() {
+    Assume.assumeNotNull(KAFKA_SERVER, CLUSTER_API_KEY, CLUSTER_API_SECRET,
+                         SR_URL, SR_API_KEY, SR_API_SECRET);
+  }
+
   public static Consumer<String, String> createConsumer() {
+    verifyTestProperties();
     Map<String, Object> props = new HashMap<>();
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
     props.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, "500");
@@ -70,6 +76,7 @@ public class KafkaTestUtils {
   }
 
   public static Consumer<Object, Object> createConsumerForSchemaRegistry() {
+    verifyTestProperties();
     Map<String, Object> props = new HashMap<>();
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
     props.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, "500");
@@ -85,6 +92,7 @@ public class KafkaTestUtils {
   }
 
   public static KafkaProducer<byte[], byte[]> createProducer() {
+    verifyTestProperties();
     Map<String, Object> props = new HashMap<>();
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
     props.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, "500");
@@ -94,6 +102,7 @@ public class KafkaTestUtils {
   }
 
   public static KafkaProducer<Object, Object> createProducerForSchemaRegistry() {
+    verifyTestProperties();
     Map<String, Object> props = new HashMap<>();
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
     props.put(CommonClientConfigs.RETRY_BACKOFF_MS_CONFIG, "500");
@@ -153,12 +162,8 @@ public class KafkaTestUtils {
     }
   }
 
-  private static String requireProperty(String propertyName) {
-    return Objects.requireNonNull(System.getProperty(propertyName),
-                                  String.format("System property '%s' should be provided", propertyName));
-  }
-
   private static AdminClient createAdminClient() {
+    verifyTestProperties();
     Map<String, Object> props = new HashMap<>();
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, KAFKA_SERVER);
     props.putAll(getSecurityProps());

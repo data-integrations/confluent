@@ -78,8 +78,12 @@ public class ConfluentStreamingSinkTest extends ConfluentStreamingTestBase {
 
   @AfterClass
   public static void cleanupTestClass() {
-    kafkaConsumer.close();
-    kafkaAvroConsumer.close();
+    if (kafkaConsumer != null) {
+      kafkaConsumer.close();
+    }
+    if (kafkaAvroConsumer != null) {
+      kafkaAvroConsumer.close();
+    }
   }
 
   @Before
@@ -278,8 +282,8 @@ public class ConfluentStreamingSinkTest extends ConfluentStreamingTestBase {
   private <K, V> List<ConsumerRecord<K, V>> waitForRecordsInKafka(Consumer<K, V> consumer, int expectedMessages)
     throws Exception {
     List<ConsumerRecord<K, V>> result = new ArrayList<>();
-    Stopwatch stopwatch = new Stopwatch();
-    while (result.size() < expectedMessages && stopwatch.elapsedTime(TimeUnit.SECONDS) < 10) {
+    Stopwatch stopwatch = Stopwatch.createStarted();
+    while (result.size() < expectedMessages && stopwatch.elapsed(TimeUnit.SECONDS) < 10) {
       ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(100));
       for (ConsumerRecord<K, V> record : records) {
         result.add(record);

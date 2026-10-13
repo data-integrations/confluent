@@ -102,6 +102,7 @@ public class ConfluentStreamingSourceStateStoreTest extends HydratorTestBase {
 
   @BeforeClass
   public static void setupTest() throws Exception {
+    KafkaTestUtils.verifyTestProperties();
     setupStreamingArtifacts(DATASTREAMS_ARTIFACT_ID, DataStreamsApp.class);
 
     // add artifact for Confluent plugins
