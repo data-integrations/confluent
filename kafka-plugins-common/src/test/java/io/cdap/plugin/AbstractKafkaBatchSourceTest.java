@@ -114,19 +114,19 @@ public abstract class AbstractKafkaBatchSourceTest extends HydratorTestBase {
     }
 
     zkServer = InMemoryZKServer.builder().setDataDir(TMP_FOLDER.newFolder()).build();
-    zkServer.startAndWait();
+    zkServer.startAsync().awaitRunning();
 
     zkClient = ZKClientService.Builder.of(zkServer.getConnectionStr()).build();
-    zkClient.startAndWait();
+    zkClient.startAsync().awaitRunning();
 
     kafkaServer = createKafkaServer(generateKafkaConfig(zkServer.getConnectionStr(), TMP_FOLDER.newFolder()));
-    kafkaServer.startAndWait();
+    kafkaServer.startAsync().awaitRunning();
 
     kafkaClient = new ZKKafkaClientService(zkClient);
-    kafkaClient.startAndWait();
+    kafkaClient.startAsync().awaitRunning();
 
     BrokerService brokerService = new ZKBrokerService(zkClient);
-    brokerService.startAndWait();
+    brokerService.startAsync().awaitRunning();
     kafkaBroker = brokerService.getBrokerList();
     while (brokerService.getBrokerList().isEmpty()) {
       TimeUnit.MILLISECONDS.sleep(100);
@@ -136,10 +136,10 @@ public abstract class AbstractKafkaBatchSourceTest extends HydratorTestBase {
 
   @After
   public void cleanup() {
-    kafkaClient.stopAndWait();
-    kafkaServer.stopAndWait();
-    zkClient.stopAndWait();
-    zkServer.stopAndWait();
+    kafkaClient.stopAsync().awaitTerminated();
+    kafkaServer.stopAsync().awaitTerminated();
+    zkClient.stopAsync().awaitTerminated();
+    zkServer.stopAsync().awaitTerminated();
   }
 
   @Test

@@ -66,20 +66,36 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <cdap.version>6.8.0</cdap.version>
+    <cdap.version>6.12.0-SNAPSHOT</cdap.version>
     <cdap.plugin.version>2.10.0</cdap.plugin.version>
     <spark1.version>1.6.1</spark1.version>
-    <spark3.version>3.1.2</spark3.version>
+    <spark3.version>3.3.2</spark3.version>
     <widgets.dir>widgets</widgets.dir>
     <docs.dir>docs</docs.dir>
     <kafka8.version>0.8.2.2</kafka8.version>
     <kafka10.version>0.10.2.0</kafka10.version>
-    <hadoop.version>2.10.2</hadoop.version>
+    <hadoop.version>3.3.6</hadoop.version>
     <netty.version>4.1.16.Final</netty.version>
     <netty-http.version>1.3.0</netty-http.version>
     <avro.version>1.8.2</avro.version>
+    <guava.version>33.8.0-jre</guava.version>
     <main.basedir>${project.basedir}</main.basedir>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.15.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -164,6 +180,14 @@
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>org.apache.avro</groupId>
           <artifactId>avro</artifactId>
         </exclusion>
@@ -228,6 +252,14 @@
           <artifactId>slf4j-log4j12</artifactId>
         </exclusion>
         <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>com.google.inject.extensions</groupId>
           <artifactId>guice-servlet</artifactId>
         </exclusion>
@@ -265,7 +297,6 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>13.0.1</version>
     </dependency>
     <dependency>
       <groupId>io.netty</groupId>
@@ -328,7 +359,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.14.1</version>
         <configuration>
-          <argLine>-Xmx2048m -Djava.awt.headless=true -XX:MaxPermSize=256m -XX:+UseConcMarkSweepGC -XX:OnOutOfMemoryError="kill -9 %p" -XX:+HeapDumpOnOutOfMemoryError</argLine>
+          <argLine>-Xmx2048m -Djava.awt.headless=true -XX:OnOutOfMemoryError="kill -9 %p" -XX:+HeapDumpOnOutOfMemoryError</argLine>
           <reuseForks>false</reuseForks>
         </configuration>
       </plugin>
